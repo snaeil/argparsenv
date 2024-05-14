@@ -1,4 +1,4 @@
-name: Pylint
+name: Checks and tests
 
 on: [push]
 

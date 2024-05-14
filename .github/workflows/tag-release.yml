@@ -13,6 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ncipollo/release-action@v1
+        with:
+          skipIfReleaseExists: true
       # TODO: use changelog for body
-      # with:
       #   bodyFile: "body.md"

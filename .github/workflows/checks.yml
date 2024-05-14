@@ -26,3 +26,9 @@ jobs:
     - name: Running tests
       run: |
         poetry run pytest -v
+    - name: Check types
+      run: |
+        poetry run mypy argparsenv
+    - name: Check formatting
+      run: |
+        poetry run black --check .

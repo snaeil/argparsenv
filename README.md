@@ -29,6 +29,8 @@ This module builds on top of python's standard library
 [argparse](https://docs.python.org/3/library/argparse.html).
 
 ```python
+import argparsenv
+
 env_arg_parser = ArgumentParser()
 env_arg_parser.add_argument(
     "--port",
@@ -69,7 +71,8 @@ Please make sure to install `pre-commit` before making changes to the code (this
 checks for code formatting, linting, etc. before committing changes):
 
 ```bash
-pip install pre-commit
+pip install poetry
+poetry install
 cd path/to/argparsenv
 pre-commit install
 ```

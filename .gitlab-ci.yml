@@ -1,0 +1,91 @@
+default:
+  image: python:3.11
+
+stages:
+  - commit_msg
+  - lint
+  - test
+  - safety
+  - docs
+  - post
+
+before_script:
+  - python --version
+  - pip install poetry
+  - poetry --version
+  - poetry lock --check
+  - poetry install --no-root
+
+# TODO: do this with poetry
+gitlint:
+  stage: commit_msg
+  script:
+    - git config --global user.name "$GITLAB_USER_NAME"
+    - git config --global user.email "$GITLAB_USER_EMAIL"
+    - pip install gitlint==0.19.1
+    - echo "$CI_COMMIT_MESSAGE" > commit_message.txt
+    - gitlint --config=.gitlint --msg-filename=commit_message.txt
+
+black:
+  stage: lint
+  script:
+    - poetry run black --check .
+
+pylint:
+  stage: lint
+  script:
+    - poetry run pylint --rcfile=.pylintrc **/*.py
+
+pylint-test:
+  stage: lint
+  script:
+    - poetry run pylint --rcfile=.pylintrc.tests tests
+
+mypy:
+  stage: lint
+  script:
+    - poetry run mypy .
+
+doctests:
+  stage: test
+  script:
+    - poetry run pytest --doctest-modules argparsenv
+
+unittests:
+  stage: test
+  script:
+    - poetry run pytest -v
+
+coverage_report:
+  stage: test
+  script:
+    - poetry run pytest --cov-report html --cov=.
+
+check-tag:
+  stage: test
+  image: docker:20
+  before_script: []
+  script:
+    - export CURRENT_VERSION=$(sed -n "s/version = \"\(.*\)\"/\1/p" pyproject.toml)
+    - '[ "$CI_COMMIT_TAG" = "$CURRENT_VERSION" ] && true || false'
+  only:
+    # https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
+    - /^(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/
+    - tags
+  except:
+    - branches
+
+safety_check:
+  stage: safety
+  script:
+    - pip install safety==2.3.5
+    - safety check --full-report
+  allow_failure: true
+
+bandit_check:
+  stage: safety
+  script:
+    - poetry run bandit -c bandit.yaml -r .
+  allow_failure: true
+
+# TODO: add changelog

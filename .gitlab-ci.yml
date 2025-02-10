@@ -13,7 +13,7 @@ before_script:
   - python --version
   - pip install poetry
   - poetry --version
-  - poetry lock --check
+  - poetry check --lock
   - poetry install --no-root
 
 # TODO: do this with poetry

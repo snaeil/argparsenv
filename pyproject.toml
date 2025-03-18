@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "argparsenv"
-version = "1.0.5"
+version = "1.0.6"
 description = "Extends python's argparser with environment variables"
 authors = ["snaeil <schnegel@posteo.de>"]
 license = "MIT"

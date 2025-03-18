@@ -67,12 +67,25 @@ Contributions are welcome!
 For feature requests, bug reports or questions, please open an issue.
 For code contributions, please open a pull request.
 
-Please make sure to install `pre-commit` before making changes to the code (this enables
-checks for code formatting, linting, etc. before committing changes):
+The development environment can be set up using `nix` and `devenv`:
 
-```bash
-pip install poetry
-poetry install
-cd path/to/argparsenv
-pre-commit install
-```
+1. Install nix package manager: `bash <(curl -L https://nixos.org/nix/install) --no-daemon`
+2. Make sure, your `~/.config/nix/nix.conf` contains the following lines:
+   ```nix
+   experimental-features = nix-command flakes
+   ```
+3. Install [`devenv`](https://devenv.sh) by running:
+   ```shell
+   nix profile install --accept-flake-config 'nixpkgs#devenv'
+   ```
+4. Install [nix-direnv](https://github.com/nix-community/nix-direnv) by running:
+   ```shell
+   nix profile install 'nixpkgs#nix-direnv'
+   ```
+   Then add nix-direnv to `$HOME/.config/direnv/direnvrc`:
+   ```bash
+   source $HOME/.nix-profile/share/nix-direnv/direnvrc
+   ```
+5. Hook direnv into your shell by adding a line to your shell's configuration file (e.g. `~/.bashrc`),
+   as described in the [direnv documentation](https://direnv.net/docs/hook.html):
+6. You might have to open a new shell to make the changes take effect.

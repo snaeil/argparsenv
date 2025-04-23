@@ -5,7 +5,9 @@
   inputs,
   ...
 }:
-
+let
+  source_dir_name = "argparsenv";
+in
 {
   # https://devenv.sh/packages/
   packages = [ pkgs.git ];
@@ -24,29 +26,30 @@
     };
   };
 
+  # Sourcing is needed for pre-commit to use the correct python venv
   scripts = {
     formatter = {
-      exec = "poetry run black .";
-      description = "Format code with Black";
+      exec = "source .venv/bin/activate && poetry run black .";
+      description = "Format the code, using black";
     };
     typecheck = {
-      exec = "poetry run mypy --ignore-missing-imports argparsenv";
+      exec = "source .venv/bin/activate && poetry run mypy --ignore-missing-imports ${source_dir_name}";
       description = "Type check with Mypy";
     };
     unit-tests = {
-      exec = "ulimit -n 50000 && poetry run pytest -v";
+      exec = "source .venv/bin/activate && ulimit -n 50000 && poetry run pytest -v";
       description = "Run unit tests";
     };
     doc-tests = {
-      exec = "ulimit -n 50000 && poetry run pytest --doctest-modules";
+      exec = "source .venv/bin/activate && ulimit -n 50000 && poetry run pytest --doctest-modules";
       description = "Run doctests";
     };
     lint = {
-      exec = "pylint --rcfile=.pylintrc argparsenv && poetry run pylint --rcfile=.pylintrc.tests tests/**/*.py";
+      exec = "source .venv/bin/activate && poetry run pylint --rcfile=.pylintrc ${source_dir_name}";
       description = "Lint source code";
     };
     test-coverage = {
-      exec = "ulimit -n 50000 && poetry run pytest --cov-report html --cov=. argparsenv";
+      exec = "source .venv/bin/activate && ulimit -n 50000 && poetry run pytest --cov-report html --cov=. ${source_dir_name}";
       description = "Generate coverage report";
     };
   };
@@ -63,6 +66,17 @@
 
   # https://devenv.sh/pre-commit-hooks/
   git-hooks.hooks = {
+    commitizen = {
+      enable = true;
+    };
+    formatter = {
+      enable = true;
+      name = "Black";
+      entry = "formatter";
+      types = [ "python" ];
+      language = "system";
+      pass_filenames = true;
+    };
     unit-tests = {
       enable = true;
       name = "Unit tests";
@@ -108,17 +122,6 @@
       ];
       language = "system";
       pass_filenames = false;
-    };
-    black = {
-      enable = true;
-      name = "Black";
-      entry = "formatter";
-      types = [ "python" ];
-      language = "system";
-      pass_filenames = true;
-    };
-    commitizen = {
-      enable = true;
     };
   };
 }

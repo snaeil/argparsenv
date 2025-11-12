@@ -63,7 +63,7 @@ coverage_report:
 
 check-tag:
   stage: test
-  image: docker:20
+  image: docker:latest
   before_script: []
   script:
     - export CURRENT_VERSION=$(sed -n "s/version = \"\(.*\)\"/\1/p" pyproject.toml)

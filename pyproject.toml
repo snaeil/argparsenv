@@ -1,40 +1,29 @@
-[tool.poetry]
+[project]
 name = "argparsenv"
-version = "1.0.10"
+version = "1.0.11"
+requires-python = ">=3.11,<4.0"
 description = "Extends python's argparser with environment variables"
-authors = ["snaeil <schnegel@posteo.de>"]
 license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/snaeil/argparsenv"
-repository = "https://github.com/snaeil/argparsenv"
-keywords = ["cli", "environment", "arguments"]
-classifiers = [
-  "Development Status :: 5 - Production/Stable",
-  "Environment :: Console",
-  "Intended Audience :: Developers",
-  "Operating System :: Microsoft :: Windows",
-  "Operating System :: MacOS",
-  "Operating System :: POSIX :: Linux",
-  "Programming Language :: Python :: 3.10",
-  "Programming Language :: Python :: 3.11",
-  "Programming Language :: Python :: 3.12",
-  "Typing :: Typed",
+dependencies = [
+    "python-dotenv>=1.0.1",
+    "overrides>=7.7.0",
 ]
 
-[tool.poetry.dependencies]
-python = "^3.11"
-python-dotenv = "^1.0.1"
-overrides = "^7.7.0"
+[dependency-groups]
+dev = [
+    "black==26.3.1",
+    "pytest-cov==7",
+    "mypy==1.10",
+    "pdoc==14.5.1",
+    "bandit==1.7",
+    "pylint==4"
+]
 
-[tool.poetry.group.dev.dependencies]
-black = "^26.3.1"
-pytest-cov = "^7"
-mypy = "^1.10"
-pdoc = "^14.5"
-bandit = "^1.7"
-pylint = "^4"
-
+[project.urls]
+Homepage = "https://github.com/snaeil/argparsenv"
+Repository = "https://github.com/snaeil/argparsenv"
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"

@@ -7,6 +7,7 @@
 }:
 let
   source_dir_name = "argparsenv";
+  venv = ".devenv/state/venv/bin";
 in
 {
   # https://devenv.sh/packages/
@@ -16,41 +17,43 @@ in
   languages.python = {
     enable = true;
     version = "3.11";
-    poetry = {
+    venv.enable = true;
+    uv = {
       enable = true;
-      activate.enable = true;
-      install = {
-        enable = true;
-        installRootPackage = false;
-      };
+      sync.enable = true;
+      sync.allGroups = true;
     };
   };
 
   # Sourcing is needed for pre-commit to use the correct python venv
   scripts = {
     formatter = {
-      exec = "source .venv/bin/activate && poetry run black .";
+      exec = "source ${venv}/activate && uv run black .";
       description = "Format the code, using black";
     };
     typecheck = {
-      exec = "source .venv/bin/activate && poetry run mypy --ignore-missing-imports ${source_dir_name}";
+      exec = "source ${venv}/activate && uv run mypy --ignore-missing-imports ${source_dir_name}";
       description = "Type check with Mypy";
     };
     unit-tests = {
-      exec = "source .venv/bin/activate && ulimit -n 50000 && poetry run pytest -v";
+      exec = "source ${venv}/activate && ulimit -n 50000 && uv run pytest -v";
       description = "Run unit tests";
     };
     doc-tests = {
-      exec = "source .venv/bin/activate && ulimit -n 50000 && poetry run pytest --doctest-modules";
+      exec = "source ${venv}/activate && ulimit -n 50000 && uv run pytest --doctest-modules";
       description = "Run doctests";
     };
     lint = {
-      exec = "source .venv/bin/activate && poetry run pylint --rcfile=.pylintrc ${source_dir_name}";
+      exec = "source ${venv}/activate && uv run pylint --rcfile=.pylintrc ${source_dir_name}";
       description = "Lint source code";
     };
     test-coverage = {
-      exec = "source .venv/bin/activate && ulimit -n 50000 && poetry run pytest --cov-report html --cov=. ${source_dir_name}";
+      exec = "source ${venv}/activate && ulimit -n 50000 && uv run pytest --cov-report html --cov=. ${source_dir_name}";
       description = "Generate coverage report";
+    };
+    security-check = {
+      exec = "uv audit";
+      description = "Check for vulnerabilities";
     };
   };
 
@@ -108,6 +111,14 @@ in
         "python"
         "toml"
       ];
+      language = "system";
+      pass_filenames = false;
+      always_run = true;
+    };
+    security-check = {
+      enable = true;
+      name = "Check for vulnerabilities";
+      entry = "security-check";
       language = "system";
       pass_filenames = false;
       always_run = true;

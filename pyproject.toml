@@ -1,6 +1,6 @@
 [project]
 name = "argparsenv"
-version = "1.0.13"
+version = "1.0.14"
 requires-python = ">=3.11,<4.0"
 description = "Extends python's argparser with environment variables"
 license = "MIT"
